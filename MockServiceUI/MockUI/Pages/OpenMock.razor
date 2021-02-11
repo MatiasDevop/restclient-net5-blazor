@@ -1,0 +1,89 @@
+﻿@page "/openmock/{id}"
+
+@using Models
+
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+<h3>OpenMock and testign endpoints</h3>
+<div>
+    <div class="row">
+        <div class="col-2">
+            <label for="exampleFormControlSelect1">Select</label>
+            <select class="form-control" @bind="@request.HttpMethod">
+                <option>@index</option>
+                @foreach (var item in httpMethods)
+                {
+                    <option value="@item.id">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-6">
+            <label for="staticEmail" class="">url</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" @bind="@request.EndPoint" placeholder="url">
+            </div>
+        </div>
+        <div class="form-group col-4">
+            <button type="submit" class="btn btn-primary m-4" @onclick="@SendRequest">Send</button>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Raw</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" @bind="@request.Parameter"></textarea>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Response Body</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6">@jsonres</textarea>
+            </div>
+        </div>
+        <div class="col-6">@mock.ResponseCode</div>
+    </div>
+
+   
+
+</div>
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+    MethodRequest method = new MethodRequest();
+    List<MethodRequest> httpMethods = new List<MethodRequest>();
+    public string index { get; set; }
+    public string jsonres { get; set; }
+
+    MockResponse mock = new();
+    protected override async Task OnInitializedAsync()
+    {
+        mock = await Http.GetFromJsonAsync<MockResponse>("https://localhost:44329/api/MockResponse/" + id);
+        httpMethods =  method.GetMethodRequest();
+        foreach (var item in httpMethods)
+        {
+            if (mock.HttpMethod == item.id)
+            {
+                index = item.Name;
+            }
+        }
+    }
+    RestClientDto request = new RestClientDto();
+    protected async Task SendRequest()
+    {
+        string serializedString = System.Text.Json.JsonSerializer.Serialize(request);
+
+        HttpResponseMessage mess = await Http.PostAsJsonAsync<RestClientDto>("https://localhost:44329/api/MockResponse/getDataRepo", request);
+        var res = mess.Content.ReadAsStringAsync().Result;
+        if (res != null)
+        {
+            mock.ResponseCode = (int)mess.StatusCode;
+        }
+        jsonres = res;   
+
+    }
+}

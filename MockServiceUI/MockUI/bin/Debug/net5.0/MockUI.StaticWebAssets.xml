@@ -1,0 +1,6 @@
+﻿<StaticWebAssets Version="1.0">
+  <ContentRoot BasePath="/" Path="D:\NET 5 Devlopment\MockServiceUI\MockUI\bin\Debug\net5.0\wwwroot\" />
+  <ContentRoot BasePath="/" Path="D:\NET 5 Devlopment\MockServiceUI\MockUI\obj\Debug\net5.0\scopedcss\bundle\" />
+  <ContentRoot BasePath="_content/Blazorise" Path="C:\Users\nestdev\.nuget\packages\blazorise\0.9.2.5\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/Blazorise.Bootstrap" Path="C:\Users\nestdev\.nuget\packages\blazorise.bootstrap\0.9.2.5\build\..\staticwebassets\" />
+</StaticWebAssets>

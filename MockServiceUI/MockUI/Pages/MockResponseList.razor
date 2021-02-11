@@ -1,0 +1,70 @@
+﻿@page "/mockList"
+
+@using Models
+
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+<h3>Mock List Services</h3>
+@if (mockList is null)
+{
+    <p>Loading</p>
+}
+else
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>HttpMethod</th>
+                    <th>EndPoint</th>
+                    <th>Response code</th>
+                    <th>Response body</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var mock in mockList)
+                {
+                    <tr>
+                        <td>
+                            <a class="btn btn-primary" href="/openmock/@mock.Id">open</a>
+                        </td>
+                        <td>
+                            <select asp-for="@mock.HttpMethod"
+                                    asp-items="Viewbag.httpMethods">
+                                <option value="@mock.HttpMethod">@httpMethods[mock.HttpMethod].Name</option>
+                            </select>
+                        </td>
+                        <td>@mock.EndPoint</td>
+                        <td>@mock.ResponseCode</td>
+                        <td>@mock.ResponseBody</td>
+
+                        <td>
+                            <a href="/editemployee/@mock.Id">Edit</a>
+                            <a href="/deleteemployee/@mock.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+ }
+
+
+@code {
+
+    MockResponse[] mockList;
+    MethodRequest method = new MethodRequest();
+    List<MethodRequest> httpMethods = new List<MethodRequest>();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        httpMethods = method.GetMethodRequest();
+
+    }
+    protected async Task LoadData()
+    {
+        mockList = await Http.GetFromJsonAsync<MockResponse[]>("https://localhost:44329/api/MockResponse");
+    }
+
+}
